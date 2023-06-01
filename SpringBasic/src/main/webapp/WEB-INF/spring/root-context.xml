@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+		<!-- 의존성 주입 : 필요한 객체(Bean이라 함) 를 등록시켜주는 역할~ -->
+		
+		<!-- 1. HikariCP 빈(객체) 등록 -->
+		<!--  id: 변수 이름 class : class 형태 property : 속성(필드)-->
+	   <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+      <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+      <property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:xe"/>
+      <property name="username" value="service"/>
+      <property name="password" value="12345"/>
+   </bean>
+   <!-- 2. Datasource 빈 등록 : Spring 통해서 Oracle에 접근 -->
+   	   <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+      <constructor-arg ref="hikariConfig" />
+   </bean>
+   
+   <!-- 3. MyBatis 빈 등록 -->
+      <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+      <property name="dataSource" ref="dataSource"/>
+      <property name="configLocation" value="classpath:/com/smhrd/myapp/config/mybatis-config.xml"/>
+   </bean>
+   
+   <mybatis-spring:scan base-package="com.smhrd.myapp.mapper"/>
+</beans>
